@@ -7,9 +7,14 @@ const conn = require("./conn/conn");
 conn(); // ✅ Connect to MongoDB
 
 const user = require("./routes/user");
+const Books = require("./routes/book");
+
 
 // Routes
-app.use("/api/v1", user);
+app.use("/api/v1", user); 
+app.use("/api/v1", Books); 
+
+
 
 // Start Server
 app.listen(process.env.PORT, () => {

@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const {authenticateToken}= require("./userAuth");
 
 // ✅ Sign-up route
 router.post("/sign-up", async (req, res) => {
@@ -82,5 +83,29 @@ router.post("/sign-in", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+//  get user infromation 
 
+router.get("/get-user-information", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.user; // ✅ Get user ID from JWT
+    const data = await User.findById(id).select("-password"); // Optionally hide password
+    return res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+//  update address 
+
+router.put("/update-address", authenticateToken,async(req,res)=>{
+  try {
+    const {id}= req.headers;
+    const{address} =req.body;
+    await User.findByIdAndUpdate(id,{address:address});
+    return res.status(200).json({message:"Address updated successfully"});
+  } catch (error) {
+    res.status(500).json({message:"Interanl aserver error"})
+  };
+})
 module.exports = router;
