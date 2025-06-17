@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/user");
 const Book = require("../models/book");
 const { authenticateToken } = require("./userAuth");
+const book = require("../models/book");
 
 // Add book — Only admin
 router.post("/add-book", authenticateToken, async (req, res) => {
@@ -68,5 +69,49 @@ router.delete("/delete-book",authenticateToken,async(req,res)=>{
     return res.status(500).json({message:"An error occurred"});
   }
 });
+
+// get all books api 
+
+router.get("/get-all-book",async(req,res)=>{
+  try {
+    const books = await Book.find().sort({createAt:-1});
+    return res.json({
+      status:"succes",
+      data:"books",
+    })
+  } catch (error) {
+   return res.status(500).json({message:"An error occurred"});
+  }
+});
+
+//  get recently added books limit 4
+
+router.get("/get-recent-books",async(req,res)=>{
+  try {
+    const books = await Book.find().sort({createAt:-1}).limit(4);
+    return res.json({
+      status:"Success",
+      data: books,
+    })
+  } catch (error) {
+      return res.status(500).json({message:"An error occurred"});
+  }
+});
+
+// get book by id 
+
+router.get("/get-book-by-id/:id",async(req,res)=>{
+  try {
+    const {id} = req.params;
+    const book = await Book.findById(id);
+    return res.json({
+      status:"success",
+      data:book,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message:"An error occurred"});
+  }
+})
 
 module.exports = router;
